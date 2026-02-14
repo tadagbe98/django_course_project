@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Online Courses</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Online Courses</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+            <li>
+                <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
+            </li>
+            {% else %}
+            <li>
+                <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Username" name="username" required>
+                        <input type="password" class="form-control" placeholder="Password" name="psw" required>
+                        <button class="btn btn-primary" type="submit">Login</button>
+                        <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
+                    </div>
+                </form>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<!-- Header -->
+<div class="jumbotron text-center bg-primary text-white">
+    <h1>Welcome to Online Courses</h1>
+    <p>Expand your knowledge with our comprehensive course catalog</p>
+</div>
+
+<!-- Course Cards -->
+<div class="container">
+    <h2 class="mb-4">Available Courses</h2>
+    <div class="row">
+        {% for course in course_list %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ course.name }}</h5>
+                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                    <p class="card-text"><small class="text-muted">Total Enrolled: {{ course.total_enrollment }}</small></p>
+                    <div class="mt-auto">
+                        <a href="{% url 'onlinecourse:course_details' course.id %}" class="btn btn-primary btn-block">View Details</a>
+                        {% if course.is_enrolled %}
+                        <span class="badge badge-success mt-2">Enrolled</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center mt-5 py-3 bg-light">
+    <p>&copy; 2026 Online Courses. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
